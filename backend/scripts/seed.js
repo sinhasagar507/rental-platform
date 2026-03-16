@@ -38,7 +38,11 @@ const seedAdmin = async () => {
         sqft: 950,
         amenities: ['Parking', 'Laundry', 'Gym', 'Doorman'],
         rules: ['No pets', 'No smoking'],
-        gallery: ['https://placehold.co/600x400/1a1a1a/666?text=Living+Room', 'https://placehold.co/600x400/1a1a1a/666?text=Bedroom'],
+        gallery: [
+          'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1522771739844-6a9f6d5f527f?w=600&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop',
+        ],
         availabilityTimeline: [
           { startDate: new Date('2025-04-01'), endDate: new Date('2025-12-31'), available: true },
         ],
@@ -57,9 +61,34 @@ const seedAdmin = async () => {
         sqft: 550,
         amenities: ['Laundry', 'Bike storage'],
         rules: ['No pets'],
-        gallery: ['https://placehold.co/600x400/1a1a1a/666?text=Studio'],
+        gallery: [
+          'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=600&h=400&fit=crop',
+        ],
         availabilityTimeline: [
           { startDate: new Date('2025-03-15'), endDate: new Date('2025-10-31'), available: true },
+        ],
+        status: 'published',
+        createdBy: admin._id,
+        publishedAt: new Date(),
+      },
+      {
+        title: 'Bright Loft with City Views',
+        description: 'Open-plan loft with floor-to-ceiling windows. Stunning skyline views.',
+        address: { street: '789 Park Ave', city: 'Manhattan', state: 'NY', zip: '10021', locationText: 'Manhattan NY' },
+        price: { monthly: 3200, deposit: 3200 },
+        propertyType: 'apartment',
+        bedrooms: 2,
+        bathrooms: 2,
+        sqft: 1200,
+        amenities: ['Gym', 'Rooftop', 'Concierge', 'Parking'],
+        rules: ['No smoking'],
+        gallery: [
+          'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&h=400&fit=crop',
+        ],
+        availabilityTimeline: [
+          { startDate: new Date('2025-05-01'), endDate: new Date('2025-11-30'), available: true },
         ],
         status: 'published',
         createdBy: admin._id,
@@ -68,11 +97,12 @@ const seedAdmin = async () => {
     ];
 
     for (const data of sampleListings) {
-      const exists = await Listing.findOne({ title: data.title });
-      if (!exists) {
-        await Listing.create(data);
-        console.log('Created listing:', data.title);
-      }
+      await Listing.findOneAndUpdate(
+        { title: data.title },
+        { $set: { ...data, updatedAt: new Date() } },
+        { upsert: true, new: true }
+      );
+      console.log('Created/updated listing:', data.title);
     }
 
     process.exit(0);

@@ -1,7 +1,12 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=250&fit=crop';
 
 export default function ListingCard({ listing }) {
-  const imageUrl = listing.gallery?.[0] || 'https://placehold.co/400x250/1a1a1a/666?text=No+Image';
+  const [imgError, setImgError] = useState(false);
+  const imageUrl = listing.gallery?.[0] || FALLBACK_IMAGE;
+  const displayUrl = imgError ? FALLBACK_IMAGE : imageUrl;
 
   return (
     <Link
@@ -23,12 +28,18 @@ export default function ListingCard({ listing }) {
         e.currentTarget.style.borderColor = 'var(--color-border)';
       }}
     >
-      <div
-        style={{
-          height: '200px',
-          background: `url(${imageUrl}) center/cover`,
-        }}
-      />
+      <div style={{ height: '200px', overflow: 'hidden' }}>
+        <img
+          src={displayUrl}
+          alt={listing.title}
+          onError={() => setImgError(true)}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      </div>
       <div style={{ padding: '16px' }}>
         <h3 style={{ marginBottom: '8px', fontSize: '1.1rem' }}>{listing.title}</h3>
         <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', marginBottom: '8px' }}>
